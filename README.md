@@ -1,0 +1,2 @@
+# NetworkQuery
+Class representing nodes
