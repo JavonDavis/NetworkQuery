@@ -4,20 +4,19 @@ import java.util.*;
 
 /**
  * Class representing a network of nodes represented by integers
- * Assumes integers representing nodes can be non-contiguous
+ * Assumes integers representing nodes are contiguous integers based on description
  */
 public class Network {
 
     private final int numElements;
     private Map<Integer, Set<Integer>> adjMap;
-    private Set<Integer> elements = new HashSet<>();
 
     /**
      * @param elementCount the number of elements in the network
      * @throws Exception
      */
     public Network(int elementCount) throws Exception {
-        if(elementCount < 0) {
+        if(elementCount <= 0) {
             throw new Exception("Element count parameter must be a positive integer.");
         }
         this.numElements = elementCount;
@@ -31,24 +30,7 @@ public class Network {
      * @throws Exception
      */
     public void connect(int node1, int node2) throws Exception {
-        if(node1 < 0 || node2 < 0) {
-            throw new Exception("Invalid value for either parameter 1 or 2, value must a positive integer");
-        }
-
-        // if network full and one of the nodes doesn't exist in network
-        if((elements.size() == numElements) && (!elements.contains(node1) || !elements.contains(node2))) {
-            throw new Exception("Size out of bounds, can't add new node network full");
-        }
-
-        // if we only have space for one and both don't exist in the network
-        if(elements.size() == numElements - 1) {
-            if(!elements.contains(node1) && !elements.contains(node2)) {
-                throw new Exception("Size out of bounds, can't add two new nodes to network");
-            }
-        }
-
-        elements.add(node1);
-        elements.add(node2);
+        validateNodes(node1, node2);
 
         if(adjMap.containsKey(node1)) {
             adjMap.get(node1).add(node2);
@@ -75,17 +57,7 @@ public class Network {
      * @return true if there's a connection, false otherwise
      */
     public boolean query(int node1, int node2) throws Exception {
-        if(node1 < 0 || node2 < 0) {
-            throw new Exception("Invalid value for either parameter 1 or 2, value must a positive integer");
-        }
-
-        if(!elements.contains(node1)) {
-            throw new Exception("Node "+node1+" does't exist in network");
-        }
-        if(!elements.contains(node2)) {
-            throw new Exception("Node "+node2+" does't exist in network");
-        }
-
+        validateNodes(node1, node2);
 
         List<Integer> toVisit = new ArrayList<Integer>(this.adjMap.get(node1));
         Set<Integer> visited = new HashSet<>();
@@ -107,6 +79,19 @@ public class Network {
 
         }
         return false;
+    }
+
+    private void validateNodes(int node1, int node2) throws Exception {
+        if(node1 < 0 || node2 < 0) {
+            throw new Exception("Invalid value for either parameter 1 or 2, value must a positive integer");
+        }
+
+        if(node1 > numElements) {
+            throw new Exception("Node "+node1+" does't exist in network");
+        }
+        if(node2 > numElements) {
+            throw new Exception("Node "+node2+" does't exist in network");
+        }
     }
 
 }
